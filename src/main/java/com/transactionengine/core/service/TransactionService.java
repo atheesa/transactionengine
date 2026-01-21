@@ -59,6 +59,7 @@ public class TransactionService {
 
         //Checking if amount is valid
         BigDecimal userBalance = getBalance(fromUser);
+        System.out.println(userBalance);
         if(userBalance.compareTo(amount) < 0){
             throw new RuntimeException("Insufficient Funds! Transfer Cancelled.");
         }

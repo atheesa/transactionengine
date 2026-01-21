@@ -51,10 +51,7 @@ public class TransactionController {
     // Transfer Money
     @PostMapping("/transfer")
     public String transferMoney(@RequestBody TransferRequest request) {
-        System.out.println(request.getFromUser());
-        System.out.println(request.getToUser());
-        System.out.println(request.getCurrency());
-        System.out.println(request.getAmount());
+
 
         transactionService.transferMoney(request.getFromUser(), request.getToUser(), request.getCurrency(), request.getAmount());
         
