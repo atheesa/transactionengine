@@ -6,10 +6,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.transactionengine.core.dto.TransferRequest;
 import com.transactionengine.core.model.Transaction;
 import com.transactionengine.core.service.TransactionService;
 
@@ -29,24 +31,36 @@ public class TransactionController {
 
     @PostMapping
     public Transaction createTransaction(@RequestBody Transaction Transaction) {
-        return createTransaction(Transaction);
+        return transactionService.createTransaction(Transaction);
     }
 
     // Get Balance
-    @PostMapping("{accountId}/balance")
+    @GetMapping("{accountId}/balance")
     public BigDecimal getBalance(@PathVariable String accountId) {
         return transactionService.getBalance(accountId);
     }
 
     // Get History
 
-    @PostMapping("{accountId}/history")
+    @GetMapping("{accountId}/history")
     public List<Transaction> getHistory(@PathVariable String accountId) {        
         return transactionService.getHistory(accountId);
     }
     
 
+    // Transfer Money
+    @PostMapping("/transfer")
+    public String transferMoney(@RequestBody TransferRequest request) {
+        System.out.println(request.getFromUser());
+        System.out.println(request.getToUser());
+        System.out.println(request.getCurrency());
+        System.out.println(request.getAmount());
 
+        transactionService.transferMoney(request.getFromUser(), request.getToUser(), request.getCurrency(), request.getAmount());
+        
+        return "Transfer Successful";
+    }
+    
 
 
 }
