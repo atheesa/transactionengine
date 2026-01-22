@@ -52,12 +52,18 @@ public class TransactionController {
     @PostMapping("/transfer")
     public String transferMoney(@RequestBody TransferRequest request) {
 
-
-        transactionService.transferMoney(request.getFromUser(), request.getToUser(), request.getCurrency(), request.getAmount());
+         transactionService.transferMoney(request.getFromUser(), request.getToUser(), request.getCurrency(), request.getAmount());
         
         return "Transfer Successful";
     }
     
-
+    // Create basic test accounts
+    @PostMapping("/setup")
+    public String setupAccounts() {
+        transactionService.createAccount("ACC-100", "Alice", "USD");
+        transactionService.createAccount("ACC-200", "Bob", "USD");
+        return "Success Created";
+    }
+    
 
 }
