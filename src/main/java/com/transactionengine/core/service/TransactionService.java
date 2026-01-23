@@ -45,7 +45,7 @@ public class TransactionService {
         acc.setBalance(acc.getBalance().add(transaction.getAmount()));
 
         accountRepository.save(acc);
-        
+
         return transaction;
     }
 
@@ -77,7 +77,7 @@ public class TransactionService {
     // PROCESS TRANSFER
     @Transactional
     public void transferMoney(String fromUser, String toUser, String currency, BigDecimal amount){
-
+            
         // Fetch accounts
         Account sender = accountRepository.findById(fromUser).orElseThrow(() -> new RuntimeException("From Account Not Found"));
         Account reciever = accountRepository.findById(toUser).orElseThrow(() -> new RuntimeException("To Account Not Found"));
