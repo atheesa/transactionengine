@@ -15,6 +15,8 @@ import com.transactionengine.core.dto.TransferRequest;
 import com.transactionengine.core.model.Transaction;
 import com.transactionengine.core.service.TransactionService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -50,7 +52,7 @@ public class TransactionController {
 
     // Transfer Money
     @PostMapping("/transfer")
-    public String transferMoney(@RequestBody TransferRequest request) {
+    public String transferMoney(@Valid @RequestBody TransferRequest request) {
 
          transactionService.transferMoney(request.getFromUser(), request.getToUser(), request.getCurrency(), request.getAmount());
         
