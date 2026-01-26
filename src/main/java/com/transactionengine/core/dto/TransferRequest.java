@@ -15,13 +15,15 @@ public class TransferRequest {
     
     @NotBlank(message = "Receiver Id is required")
     private String toUser;
-    
-    @NotBlank(message = "Currency is required")
-    private String currency;
-    
+
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01", message = "Transfer amount must be postive ---- Amount needs to more than 0.01")
     private BigDecimal amount;
     
+    
+    @NotBlank(message = "Currency is required")
+    private String currency;
+    
+
     
 }

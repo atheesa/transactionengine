@@ -17,10 +17,12 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
+    private final IdempotencyKeyService idempotencyKeyService;
 
-    public TransactionService(TransactionRepository transactionRepository,AccountRepository accountRepository){
+    public TransactionService(TransactionRepository transactionRepository,AccountRepository accountRepository, IdempotencyKeyService idempotencyKeyService){
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
+        this.idempotencyKeyService = idempotencyKeyService;
     }
 
     // CREATE ACCOUNT
@@ -76,16 +78,22 @@ public class TransactionService {
 
     // PROCESS TRANSFER
     @Transactional
-    public void transferMoney(String fromUser, String toUser, String currency, BigDecimal amount){
-            
+    public void transferMoney(String idempotencyKey,String fromUser, String toUser, BigDecimal amount,String currency){
+      
+        // Calling the key service to check if the key already exists, (idempotency) (!NO DUPLICATE CALLS WITH THE SAME KEY)
+        if (idempotencyKeyService.isDuplicate(idempotencyKey)) {
+             throw new RuntimeException("Duplicate Request!");
+        }
+
         // Fetch accounts
         Account sender = accountRepository.findById(fromUser).orElseThrow(() -> new RuntimeException("From Account Not Found"));
         Account reciever = accountRepository.findById(toUser).orElseThrow(() -> new RuntimeException("To Account Not Found"));
 
         // Getting account balances
-        BigDecimal senderAccountBalance = sender.getBalance();
-        BigDecimal recieverAccountBalance = reciever.getBalance();
-
+        BigDecimal senderAccountBalance = sender.getBalance() != null ? sender.getBalance() : BigDecimal.ZERO;
+        BigDecimal recieverAccountBalance = reciever.getBalance() != null ? reciever.getBalance() : BigDecimal.ZERO;
+        
+        
         
         //Checking if amount is valid
         if(senderAccountBalance.compareTo(amount) < 0){
@@ -118,6 +126,11 @@ public class TransactionService {
         credit.setReference("Transfer from ->" + fromUser);
         transactionRepository.save(credit);
 
+
+        // Saving the idempotency key to ensure that this key cant not be used again to call the same transfer idempotency) (!NO DUPLICATE CALLS WITH THE SAME KEY)       
+        
+        idempotencyKeyService.saveKey(idempotencyKey);
+        
         System.out.println("Transfer Successful from " + fromUser + " to " + toUser);
 
     }
